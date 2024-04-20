@@ -1,32 +1,52 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
+  const navigate = useNavigate();
+  const recognitionRef = useRef(null);
 
   useEffect(() => {
-    // Fetch initial chat messages or setup here
+    // Setup speech recognition when component mounts
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
+
+      recognition.interimResults = true;
+
+      recognition.addEventListener('result', e => {
+        const transcript = Array.from(e.results)
+          .map(result => result[0].transcript)
+          .join('');
+
+        setInputText(transcript); // Update input text with the transcript
+      });
+    } else {
+      console.error('Speech recognition not supported in this browser.');
+      alert('Speech recognition is not supported in your browser.');
+    }
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!inputText.trim()) {
       return;
     }
 
     try {
       const newMessage = { userInput: inputText, sender: 'user' };
-      setMessages([...messages, newMessage]); // Update UI with user's message
+      setMessages([...messages, newMessage]);
 
       const response = await axios.post('http://localhost:3000/home/messages', { userInput: inputText });
-      
-      // Handle response data from the API
+
       const botResponse = response.data.response.candidates[0].content.parts[0].text;
       const botMessage = { userInput: botResponse, sender: 'bot' };
 
-      setMessages([...messages, botMessage]); // Update UI with bot's response
+      setMessages([...messages, botMessage]);
       setInputText(''); // Clear input field
     } catch (error) {
       console.error('Error sending message:', error);
@@ -34,14 +54,20 @@ const ChatPage = () => {
   };
 
   const handleLogout = () => {
-    // Implement your logout logic here
     console.log('Logging out...');
-    // Redirect to logout endpoint or clear session/storage
+    navigate('/');
+    // Implement your logout logic here
+  };
+
+  const handleStartRecognition = () => {
+    const recognition = recognitionRef.current;
+    if (recognition) {
+      recognition.start();
+    }
   };
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      {/* Navbar */}
       <div className="bg-gray-800 text-white p-4 flex justify-between items-center">
         <h1 className="text-xl font-bold">Chatbot</h1>
         <button
@@ -52,23 +78,24 @@ const ChatPage = () => {
         </button>
       </div>
 
-      {/* Chat Content */}
       <div className="flex flex-row flex-1">
-        {/* Previous Chats Panel */}
         <div className="bg-gray-600 p-4 w-1/3">
           <h2 className="text-lg font-bold mb-2 mt-8">Previous Chats</h2>
           <ul>
-            {messages.map((message, index) => (
-              <li key={index} className={`bg-${message.sender === 'user' ? 'white' : 'gray-300'} rounded p-2 mb-2`}>
-                <span className="font-bold">{message.sender === 'user' ? 'You:' : 'Bot:'}</span> {message.userInput}
-              </li>
-            ))}
+            {messages.map((message, index) => {
+              if (message.sender === 'user') {
+                return (
+                  <li key={index} className="bg-white rounded p-2 mb-2">
+                    <span className="font-bold">You:</span> {message.userInput}
+                  </li>
+                );
+              }
+              return null;
+            })}
           </ul>
         </div>
 
-        {/* Chat Area */}
         <div className="flex-1 flex flex-col bg-gray-300">
-          {/* Chat Messages */}
           <div className="messages flex-1 p-4 overflow-y-auto">
             {messages.map((message, index) => (
               <div key={index} className={`message p-2 rounded mb-2 ${message.sender === 'user' ? 'bg-white' : 'bg-gray-300'}`}>
@@ -77,7 +104,6 @@ const ChatPage = () => {
             ))}
           </div>
 
-          {/* Message Input Form */}
           <form onSubmit={handleSubmit} className="p-4 flex items-center">
             <input
               type="text"
@@ -88,10 +114,19 @@ const ChatPage = () => {
             />
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors mr-2"
             >
               Send
             </button>
+            <div className="text-bold text-end"> 
+              <button
+                id="click_to_record"
+                onClick={handleStartRecognition}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors ml-2"
+              >
+                Voice To Text
+              </button>
+            </div>
           </form>
         </div>
       </div>

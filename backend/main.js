@@ -95,7 +95,7 @@ app.post('/login', async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
-
+//chatbot logic
 const MODEL_NAME = "gemini-pro";
 const API_KEY = process.env.API_KEY;
 
@@ -170,5 +170,8 @@ app.post('/home/messages', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+//text to speech logic 
+
+
 
 export default app;
