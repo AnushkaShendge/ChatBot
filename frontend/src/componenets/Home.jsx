@@ -79,19 +79,14 @@ const ChatPage = () => {
       </div>
 
       <div className="flex flex-row flex-1">
-        <div className="bg-gray-600 p-4 w-1/3">
+        <div className="bg-gray-600 p-4 w-1/3 max-h-full absolute">
           <h2 className="text-lg font-bold mb-2 mt-8">Previous Chats</h2>
           <ul>
-            {messages.map((message, index) => {
-              if (message.sender === 'user') {
-                return (
-                  <li key={index} className="bg-white rounded p-2 mb-2">
-                    <span className="font-bold">You:</span> {message.userInput}
-                  </li>
-                );
-              }
-              return null;
-            })}
+            {messages.map((message, index) => (
+              <li key={index} className={`rounded p-2 mb-2 ${message.sender === 'user' ? 'bg-white' : 'bg-gray-300'}`}>
+                <span className="font-bold">{message.sender === 'user' ? 'You:' : 'Bot:'}</span> {message.userInput}
+              </li>
+            ))}
           </ul>
         </div>
 
