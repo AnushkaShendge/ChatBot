@@ -78,8 +78,8 @@ const ChatPage = () => {
         </button>
       </div>
 
-      <div className="flex flex-row flex-1">
-        <div className="bg-gray-600 p-4 w-1/3 max-h-full absolute">
+      <div className="flex flex-1">
+        <div className="bg-gray-600 p-4 chat-sidebar" style={{ width: '320px', maxHeight: '100%', overflowY: 'auto' }}>
           <h2 className="text-lg font-bold mb-2 mt-8">Previous Chats</h2>
           <ul>
             {messages.map((message, index) => (
@@ -90,8 +90,8 @@ const ChatPage = () => {
           </ul>
         </div>
 
-        <div className="flex-1 flex flex-col bg-gray-300">
-          <div className="messages flex-1 p-4 overflow-y-auto">
+        <div className="flex-1 bg-gray-300 p-4">
+          <div className="messages flex-1 overflow-y-auto">
             {messages.map((message, index) => (
               <div key={index} className={`message p-2 rounded mb-2 ${message.sender === 'user' ? 'bg-white' : 'bg-gray-300'}`}>
                 <span className="font-bold">{message.sender === 'user' ? 'You:' : 'Bot:'}</span> {message.userInput}
