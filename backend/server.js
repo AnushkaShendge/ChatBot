@@ -1,6 +1,3 @@
-// node --version # Should be >= 18
-// npm install @google/generative-ai express
-
 const express = require('express');
 const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require('@google/generative-ai');
 const dotenv = require('dotenv').config()

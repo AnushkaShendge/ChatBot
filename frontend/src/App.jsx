@@ -1,6 +1,6 @@
 import {BrowserRouter, Routes , Route} from 'react-router-dom'
 import Signup from './componenets/Signup'
-import Home from './componenets/Home'
+import ChatPage  from './componenets/Home'
 import './index.css'
 import './output.css'
 import Login from './componenets/Login'
@@ -10,7 +10,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path = '/' element={<Signup />} />
-        <Route path = '/home' element={<Home />} />
+        <Route path = '/home' element={<ChatPage />} />
         <Route path = '/login' element={<Login />} />
       </Routes>
     </BrowserRouter>
